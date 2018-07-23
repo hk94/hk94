@@ -1,7 +1,5 @@
 
 import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,11 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -25,19 +22,12 @@ import javax.crypto.SecretKey;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JTextField;	
 
 class PEKSCFrame extends JFrame implements ActionListener {
 	JTextArea jta;
@@ -80,26 +70,14 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 	RSAdemo rsa = new RSAdemo();
 
+	
+	
+	
 	PEKSCFrame() {// constructor, initial the graphic user interface
-		setTitle("PEKSClient");
-		/*try {
-
-			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-			SwingUtilities.updateComponentTreeUI(rootPane);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-
+		setTitle("PEKS Client");
+		
+		
+		
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta1);
 		jta.setLineWrap(true);
@@ -112,7 +90,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		displayPanel = new JPanel();
 		displayPanel.setLayout(new BorderLayout());
 		displayPanel.add(jsp1, BorderLayout.CENTER);
-		connect = new JButton("连接");
+		connect = new JButton("Connect");
 		displayPanel.add(connect, BorderLayout.SOUTH);
 		connect.addActionListener(this);
 
@@ -121,7 +99,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		update.setControlButtonsAreShown(false);
 		updatePanel.add(update, BorderLayout.CENTER);
 		buttonPanel1 = new JPanel();
-		updateFile = new JButton("上传");
+		updateFile = new JButton("Upload");
 		buttonPanel1.add(updateFile);
 		updateFile.addActionListener(this);
 		updatePanel.add(buttonPanel1, BorderLayout.SOUTH);
@@ -129,7 +107,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		searchPanel = new JPanel();
 		keywordField = new JTextField(20);
 		searchPanel.add(keywordField);
-		search = new JButton("搜索");
+		search = new JButton("Search");
 		searchPanel.add(search);
 		search.addActionListener(this);
 
@@ -138,8 +116,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		result.setControlButtonsAreShown(false);
 		resultPanel.add(result, BorderLayout.CENTER);
 		buttonPanel = new JPanel();
-		cipherText = new JButton("直接打开");
-		plainText = new JButton("解密后打开");
+		cipherText = new JButton("Open");
+		plainText = new JButton("Decrypt and Open");
 		buttonPanel.add(cipherText);
 		cipherText.addActionListener(this);
 		buttonPanel.add(plainText);
@@ -147,10 +125,10 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		resultPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		jtp = new JTabbedPane();
-		jtp.add("客户端信息", displayPanel);
-		jtp.add("上传文件", updatePanel);
-		jtp.add("搜索文件", searchPanel);
-		jtp.add("结果查看", resultPanel);
+		jtp.add("Server Information", displayPanel);
+		jtp.add("Upload Files", updatePanel);
+		jtp.add("Search Files", searchPanel);
+		jtp.add("Search Result", resultPanel);
 
 		centerPanel = new JPanel();
 		centerPanel.setLayout(new BorderLayout());
@@ -172,39 +150,13 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 	public void loadParameters() {
 		try {
-			/*KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-			keyPairGen.initialize(512);
-			KeyPair keyPair = keyPairGen.generateKeyPair();
-			RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();*/
 			ois = new ObjectInputStream(new FileInputStream("G:\\test\\client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
 			
 			ois.close();
-			/*System.out.println("publickey is :"+publicKey.toString());
-			System.out.println("privatekey is :"+privateKey.toString());
-
-
-			String test="make a test";
-			System.out.println(new String(test.getBytes()));
 			
-			byte[] test2=rsa.encrypt(publicKey, test.getBytes());
-			System.out.println(new String(test2));
-			byte[] test3=rsa.decrypt(privateKey, test2);
-			System.out.println(new String(test3));*/
-			
-			
-			
-			/*key = (SecretKey) ois.readObject();
-			modules = (BigInteger) ois.readObject();
-			generator = (BigInteger) ois.readObject();// read in the system//
-														// parameters
-			eulermodules = (BigInteger) ois.readObject();
-			*/
 			mdc = MessageDigest.getInstance("SHA");
-
-			//System.out.println("c0");
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -242,25 +194,16 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 			else {
 				keyword = keywordField.getText().trim();
-				String str=""+keyword.hashCode();
-				//BigInteger temp1 = new BigInteger(mdc.digest()).abs().nextProbablePrime();// h(w)
-				/*
-				BigInteger temp2 = temp1.modInverse(eulermodules);// generate
-																	// -h(w)
-				BigInteger temp3 = new BigInteger(512, new Random());// generate
-																		// r
-				BigInteger temp4 = temp2.multiply(temp3);// -r*h(w)
-				BigInteger temp5 = generator.modPow(temp3, modules);// generate
-																	// g^r
-				*/					
+				byte[] str;
+				str = rsa.encrypt(publicKey, keyword.getBytes());
+								
 																	 
-				Trapdoor t = new Trapdoor(1,str,null);
+				Trapdoor t = new Trapdoor(1,(keyword.hashCode()+"").getBytes(),null);
 
 				try {
 					oos.writeObject(t);
 					oos.flush();
 
-					//System.out.println("c1");
 					tempC = ois.readInt();
 					String fileName;
 					File tempFile;
@@ -268,10 +211,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					FileOutputStream fos;
 					while (tempC==1) {
 
-						//System.out.println("c2");
 						fileName = (String) ois.readObject();
 						tempFile = new File(fileName);
-						//System.out.println("c2="+fileName);
 						fis = new FileInputStream(tempFile);
 						fos = new FileOutputStream(
 								"G:\\test\\search result\\"
@@ -289,12 +230,12 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					//System.out.println("c3");
 					if  (tempC==-1){
 						JOptionPane.showMessageDialog(jtp,
-								"没有匹配的密文！");
+								"No File Matching");
 					}
 					else
 					{
 						JOptionPane
-								.showMessageDialog(jtp, "搜索完成！");
+								.showMessageDialog(jtp, "Searching Completed");
 					}
 
 				} catch (Exception e1) {
@@ -335,11 +276,6 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					outputFile.createNewFile();
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
-					/*encrypter = new DesEncrypter(key);
-					encrypter.decrypt(
-							new FileInputStream(result.getSelectedFile()),
-							new FileOutputStream("decrypt"
-									+ result.getSelectedFile().getName()));*/
 					
 					String[] command = { "notepad","G:\\test\\Data Records\\temp"};
 					Runtime.getRuntime().exec(command);
@@ -360,7 +296,6 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					filePath = update.getSelectedFile().getAbsolutePath();
 					int rand=(int)((100000000+Math.random()*899999999)+(100000000+Math.random()*899999999)+(100000000+Math.random()*899999999));
 					String strp="file"+rand;
-					
 
 					File tempFile = new File(filePath);
 					File outputFile = new File("G:\\test\\Data Records\\"+strp);
@@ -369,10 +304,13 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					String str1 = filePath.substring(0, dot);
 					dot = str1.lastIndexOf("\\");
 					str1 = str1.substring(dot+1, str1.length());
-					String strs=""+str1.hashCode();
-					System.out.println(str1);
+
+					System.out.println("filename:"+str1+" length:"+str1.length());
+					byte[] strs=rsa.encrypt(publicKey, str1.getBytes());
+					
+					System.out.println("encfilename:"+(strs.hashCode()+""));
 					try {
-						outputFile.createNewFile();//如果目录下没有myfile.txt这个文件则新建一个。
+						outputFile.createNewFile();
 
 						rsa.encryptFile(publicKey, tempFile, outputFile);
 						 } catch (IOException e1) {
@@ -381,7 +319,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					
 					
 					
-					Trapdoor t = new Trapdoor(2,strs,"G:\\test\\Data Records\\"+strp);
+					Trapdoor t = new Trapdoor(2,(str1.hashCode()+"").getBytes(),"G:\\test\\Data Records\\"+strp);
 					try 
 					{
 						oos.writeObject(t);
@@ -389,7 +327,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 						tempB = ois.readBoolean();
 						if (tempB) {
 							JOptionPane
-									.showMessageDialog(jtp, "上传成功");
+									.showMessageDialog(jtp, "Upload Success!");
 						} 
 						else 
 						{
@@ -407,11 +345,27 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		}
 	}
 
-	private void displayInitialInformation() {// display the encryption key and
-		// generator,modules,eulermodules;
-		jta1.append("文件夹位置：F\\test\\Client\\\n\n");
-		jta1.append("连接端口号：8901\n\n");
-		jta1.append("初始化完成！点击连接按钮后可以开始正常使用。");
+	private void displayInitialInformation() {
+		jta1.append("Path: F\\test\\Client\\\n\n");
+		jta1.append("Port Number: 8901\n\n");
+		jta1.append("Initial success, click the connect button to use.");
+		/*String test="keyword1";
+		
+		byte[] temp=rsa.encbypri(privateKey,test.getBytes());
+		try {
+			System.out.println("temp is:"+new String(temp,"ISO-8859-1"));
+		} catch (UnsupportedEncodingException e1) {
+			// TODO 自动生成的 catch 块
+			e1.printStackTrace();
+		}
+		temp=rsa.sign2cypher(publicKey,temp);
+
+		try {
+			System.out.println("temp is:"+new String(temp,"ISO-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}*/
 	}
 
 
@@ -419,6 +373,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 public class PEKSClient {
 	public static void main(String[] args) {
+		
 		new Thread() {
 			public void run() {
 				PEKSCFrame peksc = new PEKSCFrame();

@@ -54,51 +54,23 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	private JMenuBar jmb;
 	private JMenu jm1;
 	private JMenuItem jmi1, jmi2;// jmi1 initial, jmi2 exit
-	private BigInteger modules, generator;// the public parameters modules
-											// received from the client;
 	private ObjectInputStream ois;
 	private ServerSocket ss;
 	private Socket servs;
-	//private Vector<String> keyVector1,keyVector2;// an vector to stand for the keywords
-											// stored
-	// on the server
 	private MessageDigest mds;
-	private Hashtable<String, String> ht;
+	private Hashtable<String, Integer> ht;
 	SecretKey key;
 	JPanel southPanel;
 	JButton openButton;
-	//BBGHIBE bbgHIBE;
-	//BBGHIBEMasterKey msk;
-	//String[] IDV;
 
 	RSAPublicKey publicKey;
 
-	public PEKSSFrame() {// constructor
-		/*try {
-			UIManager.setLookAndFeel("com.jtattoo.plaf.acryl.AcrylLookAndFeel");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+	RSAdemo rsa = new RSAdemo();
+	public PEKSSFrame() {
 		
 		
 
-        //bbgHIBE = new BBGHIBE();  
-        //msk = bbgHIBE.Setup("a.properties");  
-        //IDV = new String[1];  
-        //IDV[0]="hk94";
-
-        //BBGHIBESecretKey SecretKey = bbgHIBE.KeyGen(msk, IDV);   
-		setTitle("PEKS服务器");
+		setTitle("PEKS Server");
 		jfc = new JFileChooser("G:\\test\\Data Records");
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta);
@@ -110,20 +82,17 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		jm1 = new JMenu("System");
 		jm1.add(jmi1);
 		jm1.add(jmi2);
-		jm1.addSeparator();
+		jm1.addSeparator();	
 		jmb = new JMenuBar();
 		jmb.add(jm1);// add the menu bar
 		jmi1.addActionListener(this);
 		jmi2.addActionListener(this);// add action listener
 		setJMenuBar(jmb);
 		add(jsp, BorderLayout.EAST);
-		//keyVector1 = new Vector<String>();// initial the keyVector
-		//keyVector2 = new Vector<String>();
-		//keyVector3 = new Vector<Element>();
-		ht = new Hashtable<String, String>();// initial the hashtable
-		//jfc = new JFileChooser("Data Records");
+		ht = new Hashtable<String, Integer>();// initial the hashtable
+		
 		southPanel = new JPanel();
-		openButton = new JButton("打开");
+		openButton = new JButton("Open");
 		openButton.addActionListener(this);
 		southPanel.add(openButton);
 		add(southPanel, BorderLayout.SOUTH);
@@ -146,97 +115,24 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					"G:\\test\\server.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			System.out.println("publickey is :"+publicKey.toString());
-			//key = (SecretKey) ois.readObject();
-			//modules = (BigInteger) ois.readObject();
-			//generator = (BigInteger) ois.readObject();
-			//keyVector=(Vector<BigInteger>) ois.readObject();
-			//ht=(Hashtable<BigInteger, String>) ois.readObject();
+			
 			ois.close();
 			
-			/*ObjectInputStream ois2 = new ObjectInputStream(new FileInputStream(
-					"G:\\test\\filelist.data"));
-			ht=(Hashtable) ois2.readObject();
-
-			ois2.close();*/
 			mds = MessageDigest.getInstance("SHA");// initial the
 													// messagedigester
-			System.out.println("初始化成功！文件夹路径：G:\\test\\\n");
-			jta.append("初始化成功！文件夹路径：G:\\test\\\n");
+			System.out.println("Initial Success, path is: G:\\test\\\n");
+			jta.append("Initial Success, path is: G:\\test\\\n");
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
 	}
 
-	/*public void getValues(String pathName) throws Exception {
-		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-				"F:\\test\\filelist.data"));
-		//key = (SecretKey) ois.readObject();
-		//modules = (BigInteger) ois.readObject();
-		//generator = (BigInteger) ois.readObject();
-		for (File tempFile : new File(pathName).listFiles()) {
-			encrypter = new DesEncrypter(key);
-			String tempString = tempFile.getName();
-
-			System.out.println(tempString);
-			int dot = tempString.lastIndexOf(".");
-			String tempString1 = tempString.substring(0, dot);
-			System.out.println(tempString1);
-			/*mds = MessageDigest.getInstance("SHA");
-			mds.update(tempString1.getBytes());
-			BigInteger tempBigInteger1 = new BigInteger(mds.digest()).abs()
-					.nextProbablePrime();
-			mds.reset();
-			BigInteger tempBigInteger2 = generator.modPow(tempBigInteger1,
-					modules); 
-					
-			//BBGHIBECiphertext ciphertext = bbgHIBE.Encrypt(IDV,tempString1);  
-			//keyVector1.add(ciphertext.C_0);
-			//keyVector2.add(ciphertext.C_1);
-			//keyVector3.add(ciphertext.C_2);
-			//BigDecimal big=new BigDecimal();
-			File outputFile = new File("G:\\test\\Data Records\\"
-					+ System.currentTimeMillis()*Math.random() + ".txt");
-			try {
-				outputFile.createNewFile();//如果目录下没有myfile.txt这个文件则新建一个。
-				 } catch (IOException e) {		
-				  // TODO Auto-generated catch block
-				  e.printStackTrace();}
-			encrypter.encrypt(new FileInputStream(tempFile),
-					new FileOutputStream(outputFile));
-			ht.put( outputFile.getAbsolutePath(),ciphertext.C_0.toString());
-		}
-
-		ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(
-				"F:\\test\\server.data"));
-		o.writeObject(key);
-		o.writeObject(modules);
-		o.writeObject(generator);
-		o.writeObject(keyVector1);
-		o.writeObject(keyVector2);
-		o.writeObject(keyVector3);
-		o.writeObject(ht);
-		o.close();
-	}
-
-	public void genKeyVector() {// generate the vector list of the keywords of
-								// awd1990
-
-		try {
-			getValues("F:\\test\\123");
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}*/
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == jmi1) {
 			
-			//genKeyVector();
 			loadParameters();
 			socketThread st = new socketThread();
 			Thread socketT = new Thread(st);
@@ -277,7 +173,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 				servs = ss.accept();
 
 				jta.append("\n" + servs.getLocalSocketAddress()
-						+ "连接成功！");
+						+ "Connect Success.");
 			} catch (Exception es) {
 				JOptionPane.showMessageDialog(null,
 						"socket error has taken place!");
@@ -313,16 +209,15 @@ class PEKSSFrame extends JFrame implements ActionListener {
 				jdg = new JDialog();
 				jpb = new JProgressBar();
 				jpb.setBorderPainted(true);
-				//jpb.setBorder(BorderFactory.createTitledBorder("当前目录搜索完成度"));
 				jpb.setValue(0);
 				jpb.setStringPainted(true);
-				jdg.setTitle("搜索");
+				jdg.setTitle("Search");
 				jdg.add(jpb,BorderLayout.NORTH);
 				jpb.setMinimum(0);
 				jpb.setMaximum(256);//
 				showArea = new JTextArea(10, 10);
 				showArea.setLineWrap(true);
-				showArea.setBorder(BorderFactory.createTitledBorder("当前搜索文件"));
+				showArea.setBorder(BorderFactory.createTitledBorder("Now Searching:"));
 				jscp = new JScrollPane(showArea); 
 				jdg.add(jscp, BorderLayout.SOUTH);
 				jdg.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
@@ -345,48 +240,33 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					int type = t.getType();
 					if (type==1)
 					{
-						String temps=t.getStr();
-						//BBGHIBECiphertext ciphertextt = bbgHIBE.Encrypt(IDV,temps);
-						//Element tempe=ciphertextt.C_0;
+						byte[] tempt=t.getStr();
+						System.out.println("tempt is:"+tempt);
+						int temps=Integer.parseInt(new String(tempt,"ISO-8859-1"));
+						System.out.println("temps is:"+temps);
 						jta.append("\ncomplete reading the trapdoor!\nStarting to seach!");
 						i = 0;
 						jpb.setValue(i);
 						jdg.setVisible(true);
-						System.out.println("s1");
 						for (String tempk : ht.keySet()) {
-							//System.out.println(tempb.modPow(temp1, modules)+"??="+temp2+"\n");
-							//System.out.println("s2");
-							String tempb = ht.get(tempk);
-							if (temps.equals(tempb)) {
-								/*Iterator<Entry<String, String>> it2 = ht.entrySet().iterator();
-								Entry<String, String> entry;
-						        while(it2.hasNext()){
-						        	entry=it2.next();
-
-									//System.out.println(entry.getValue()+"?="+tempb.toString()+"\n");
-						        	//System.out.println("now is :"+entry.getKey());
-						        	if (entry.getValue().equals(tempb.toString())){
-*/
+							int tempb = ht.get(tempk);
+							System.out.println("tempb is:"+tempb);
+							if (temps==tempb) {
+						
 										oos1.writeInt(1);
 						        		fileName = tempk;
 										tempFile = new File(fileName);
 										oos1.writeObject(fileName);
 
-										//System.out.println(fileName);
 										oos1.flush();
 										jpb.setValue(jpb.getMaximum());
-										showArea.setText(tempb.toString()
+										showArea.setText(tempb
 												+ "match success!");
-										//Thread.sleep(1000);
 										jdg.setVisible(false);	
 										i++;
 										jpb.setValue(i);
-										showArea.setText("当前匹配:"+tempb.toString());
+										showArea.setText("Now Matching:"+tempb);
 						        	
-						        	   
-						        
-								//break;
-								
 							}
 						}
 						if (i==0)
@@ -401,36 +281,20 @@ class PEKSSFrame extends JFrame implements ActionListener {
 						if (i==0) {
 							jpb.setValue(256);
 							showArea.setText("complete searching! No file matches!");
-							//Thread.sleep(2000);
-							System.out.println("s6");
 							jdg.setVisible(false);
 						}
 					}
 					else
 					{
-						String str = t.getStr();
-						System.out.println(str);
+						byte[] str = t.getStr();
+						int strt=Integer.parseInt(new String(str,"ISO-8859-1"));
+						System.out.println("hashtable put:"+strt);
 
-						//keyVector1.add(str);
-						//keyVector2.add(t.getpath());
-						ht.put(t.getpath(),str);
-						
-						//mds = MessageDigest.getInstance("SHA");
-						
-
-				        //BBGHIBECiphertext ciphertext = bbgHIBE.Encrypt(IDV,str1);  
-						
-						//ciphertext.mds.update(str1.getBytes());
-						//BigInteger tempBigInteger1 = new BigInteger(mds.digest()).abs().nextProbablePrime();
-						//mds.reset();
-						//BigInteger tempBigInteger2 = generator.modPow(tempBigInteger1,modules);
-						//keyVector3.add(ciphertext.C_2);
-						//BigDecimal big=new BigDecimal();
+						ht.put(t.getpath(),strt);
 						
 						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(
 								"G:\\test\\filelist.data"));
 						o.writeObject(ht);
-						//o.writeObject(keyVector2);
 						o.close();
 						jta.append("\nUpdate success!");
 						oos1.writeBoolean(true);
@@ -446,7 +310,6 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	}
 }
 
-// 实例化服务器
 public class PEKSServer {
 	public static void main(String[] args) {
 		new Thread() {

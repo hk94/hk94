@@ -3,7 +3,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;  
+import java.io.OutputStream;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;  
 import java.security.interfaces.RSAPublicKey;  
 
@@ -86,4 +90,39 @@ public void decryptFile(RSAPrivateKey privateKey, File file, File newFile) {
 	}
 }
 
+protected byte[] encbypri(RSAPrivateKey privateKey, byte[] obj) {
+	if (privateKey != null) {
+		try {
+			Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+			return cipher.doFinal(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	return null;
+}
+
+protected int sign2cypher(RSAPublicKey publicKey, byte[] obj) {
+	if (publicKey != null) {
+		try {
+			Cipher cipher1 = Cipher.getInstance("RSA");
+			cipher1.init(Cipher.DECRYPT_MODE, publicKey);
+			Cipher cipher2 = Cipher.getInstance("RSA");
+			cipher2.init(Cipher.ENCRYPT_MODE, publicKey);
+			
+			byte[] temp=cipher1.doFinal(obj);
+			String temps=new String(temp);
+			System.out.println("keyword is:"+temps+" length:"+temps.length());
+			byte[] strs=encrypt(publicKey, temps.getBytes());
+			return strs.hashCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	return 0;
+}
+
+
 }  
+
