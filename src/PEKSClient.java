@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
@@ -69,8 +70,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	RSAPrivateKey privateKey;
 
 	RSAdemo rsa = new RSAdemo();
-
-	
+	Base64.Decoder decoder = Base64.getDecoder();
+	Base64.Encoder encoder = Base64.getEncoder();
 	
 	
 	PEKSCFrame() {// constructor, initial the graphic user interface
@@ -194,11 +195,17 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 			else {
 				keyword = keywordField.getText().trim();
-				byte[] str;
-				str = rsa.encrypt(publicKey, keyword.getBytes());
-								
+				String strb=encoder.encodeToString(keyword.getBytes());
+				
+				byte[] str = null;
+				try {
+					str = rsa.signature(privateKey, (strb.hashCode()+"").getBytes());
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+				String strt=encoder.encodeToString(str);
 																	 
-				Trapdoor t = new Trapdoor(1,(keyword.hashCode()+"").getBytes(),null);
+				Trapdoor t = new Trapdoor(1,strt,null);
 
 				try {
 					oos.writeObject(t);
@@ -304,11 +311,10 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					String str1 = filePath.substring(0, dot);
 					dot = str1.lastIndexOf("\\");
 					str1 = str1.substring(dot+1, str1.length());
-
-					System.out.println("filename:"+str1+" length:"+str1.length());
-					byte[] strs=rsa.encrypt(publicKey, str1.getBytes());
 					
-					System.out.println("encfilename:"+(strs.hashCode()+""));
+					System.out.println("filename:"+str1+" length:"+str1.length());
+					String strb=encoder.encodeToString(str1.getBytes());
+					System.out.println("encfilename:"+(strb.hashCode()+""));
 					try {
 						outputFile.createNewFile();
 
@@ -319,7 +325,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					
 					
 					
-					Trapdoor t = new Trapdoor(2,(str1.hashCode()+"").getBytes(),"G:\\test\\Data Records\\"+strp);
+					Trapdoor t = new Trapdoor(2,strb.hashCode()+"","G:\\test\\Data Records\\"+strp);
 					try 
 					{
 						oos.writeObject(t);

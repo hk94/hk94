@@ -9,9 +9,11 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;  
-import java.security.interfaces.RSAPublicKey;  
+import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
+
 
 public class RSAdemo {  
   
@@ -90,38 +92,19 @@ public void decryptFile(RSAPrivateKey privateKey, File file, File newFile) {
 	}
 }
 
-protected byte[] encbypri(RSAPrivateKey privateKey, byte[] obj) {
-	if (privateKey != null) {
-		try {
-			Cipher cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, privateKey);
-			return cipher.doFinal(obj);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	return null;
+protected byte[] signature(RSAPrivateKey privateKey ,byte[] data) throws Exception {
+  Signature signature = Signature.getInstance("MD5withRSA");
+  signature.initSign(privateKey);
+  signature.update(data);
+  return signature.sign();
+}
+protected boolean verify(RSAPublicKey publicKey,byte[] data,byte[] sign) throws Exception {
+    Signature signature = Signature.getInstance("MD5withRSA");
+    signature.initVerify(publicKey);
+    signature.update(data);	
+    return signature.verify(sign);
 }
 
-protected int sign2cypher(RSAPublicKey publicKey, byte[] obj) {
-	if (publicKey != null) {
-		try {
-			Cipher cipher1 = Cipher.getInstance("RSA");
-			cipher1.init(Cipher.DECRYPT_MODE, publicKey);
-			Cipher cipher2 = Cipher.getInstance("RSA");
-			cipher2.init(Cipher.ENCRYPT_MODE, publicKey);
-			
-			byte[] temp=cipher1.doFinal(obj);
-			String temps=new String(temp);
-			System.out.println("keyword is:"+temps+" length:"+temps.length());
-			byte[] strs=encrypt(publicKey, temps.getBytes());
-			return strs.hashCode();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	return 0;
-}
 
 
 }  

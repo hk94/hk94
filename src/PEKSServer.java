@@ -18,6 +18,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -46,6 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+
 class PEKSSFrame extends JFrame implements ActionListener {
 
 	private JFileChooser jfc;
@@ -66,6 +68,8 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	RSAPublicKey publicKey;
 
 	RSAdemo rsa = new RSAdemo();
+	Base64.Decoder decoder = Base64.getDecoder();
+	Base64.Encoder encoder = Base64.getEncoder();
 	public PEKSSFrame() {
 		
 		
@@ -240,10 +244,9 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					int type = t.getType();
 					if (type==1)
 					{
-						byte[] tempt=t.getStr();
+						String tempt=t.getStr();
 						System.out.println("tempt is:"+tempt);
-						int temps=Integer.parseInt(new String(tempt,"ISO-8859-1"));
-						System.out.println("temps is:"+temps);
+						byte[] sign=decoder.decode(tempt);
 						jta.append("\ncomplete reading the trapdoor!\nStarting to seach!");
 						i = 0;
 						jpb.setValue(i);
@@ -251,7 +254,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 						for (String tempk : ht.keySet()) {
 							int tempb = ht.get(tempk);
 							System.out.println("tempb is:"+tempb);
-							if (temps==tempb) {
+							if (rsa.verify(publicKey,(tempb+"").getBytes(),sign)) {
 						
 										oos1.writeInt(1);
 						        		fileName = tempk;
@@ -286,8 +289,8 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					}
 					else
 					{
-						byte[] str = t.getStr();
-						int strt=Integer.parseInt(new String(str,"ISO-8859-1"));
+						String str = t.getStr();
+						int strt=Integer.parseInt(str);
 						System.out.println("hashtable put:"+strt);
 
 						ht.put(t.getpath(),strt);
