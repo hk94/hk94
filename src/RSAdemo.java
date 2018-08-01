@@ -71,7 +71,6 @@ public void encryptFile(RSAPublicKey publicKey, File file, File newFile) {
 		}
 		os.close();
 		is.close();
-		System.out.println("write success");
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
@@ -92,7 +91,7 @@ public void decryptFile(RSAPrivateKey privateKey, File file, File newFile) {
 		}
 		os.close();
 		is.close();
-		System.out.println("write success");
+		//System.out.println("write success");
 	} catch (Exception e) {
 		e.printStackTrace();
 	}

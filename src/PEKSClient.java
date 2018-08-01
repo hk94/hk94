@@ -223,7 +223,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 						tempFile = new File(fileName);
 						fis = new FileInputStream(tempFile);
 						fos = new FileOutputStream(
-								"test\\search result\\"
+								"test\\SearchResult\\"
 										+ tempFile.getName());
 						//System.out.println("file is :"+tempFile.getName());
 						int i = 0;
@@ -278,14 +278,14 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					filePath = result.getSelectedFile().getAbsolutePath();
 					File tempFile = new File(filePath);
 					//System.out.println("try to decrypt:"+filePath);
-					File outputFile = new File("test\\Data Records\\temp");
+					File outputFile = new File("test\\DataRecords\\temp");
 
 					outputFile.delete();
 					outputFile.createNewFile();
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
 					
-					String[] command = { "notepad","test\\Data Records\\temp"};
+					String[] command = { "notepad","test\\DataRecords\\temp"};
 					Runtime.getRuntime().exec(command);
 					result.rescanCurrentDirectory();
 				} catch (Exception e1) {
@@ -306,7 +306,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					String strp="file"+rand;
 
 					File tempFile = new File(filePath);
-					File outputFile = new File("test\\Data Records\\"+strp);
+					File outputFile = new File("test\\DataRecords\\"+strp);
 					
 					int dot = filePath.lastIndexOf(".");
 					String str1 = filePath.substring(0, dot);
@@ -327,7 +327,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					
 					
 					
-					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test\\Data Records\\"+strp);
+					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test\\DataRecords\\"+strp);
 					try 
 					{
 						oos.writeObject(t);
@@ -354,7 +354,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	}
 
 	private void displayInitialInformation() {
-		jta1.append("Path: test\\Client\\\n\n");
+		jta1.append("Path: test\\\n\n");
 		jta1.append("Port Number: 8901\n\n");
 		jta1.append("Initial success, click the connect button to use.");
 		

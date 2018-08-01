@@ -245,7 +245,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					if (type==1)
 					{
 						String tempt=t.getStr();
-						System.out.println("tempt is:"+tempt);
+						//System.out.println("tempt is:"+tempt);
 						byte[] sign=decoder.decode(tempt);
 						jta.append("\ncomplete reading the trapdoor!\nStarting to seach!");
 						i = 0;
@@ -253,7 +253,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 						jdg.setVisible(true);
 						for (String tempk : ht.keySet()) {
 							int tempb = ht.get(tempk);
-							System.out.println("tempb is:"+tempb);
+							//System.out.println("tempb is:"+tempb);
 							if (rsa.verify(publicKey,(tempb+"").getBytes(),sign)) {
 						
 										oos1.writeInt(1);
@@ -291,7 +291,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					{
 						String str = t.getStr();
 						int strt=Integer.parseInt(str);
-						System.out.println("hashtable put:"+strt);
+						//System.out.println("hashtable put:"+strt);
 
 						ht.put(t.getpath(),strt);
 						
