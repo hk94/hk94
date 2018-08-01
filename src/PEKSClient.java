@@ -198,7 +198,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 				byte[] strb=rsa.encryptk(publicKey, keyword.getBytes());
 				String str=encoder.encodeToString(strb);
-				System.out.println("keyword is:"+str.hashCode());
+				//System.out.println("keyword is:"+str.hashCode());
 				try {
 					strb = rsa.signature(privateKey, (str.hashCode()+"").getBytes());
 				} catch (Exception e2) {
@@ -223,9 +223,9 @@ class PEKSCFrame extends JFrame implements ActionListener {
 						tempFile = new File(fileName);
 						fis = new FileInputStream(tempFile);
 						fos = new FileOutputStream(
-								"G:\\test\\search result\\"
+								"test\\search result\\"
 										+ tempFile.getName());
-						System.out.println("file is :"+tempFile.getName());
+						//System.out.println("file is :"+tempFile.getName());
 						int i = 0;
 						while ((i = fis.read()) != -1) {
 							fos.write(i);
@@ -277,15 +277,15 @@ class PEKSCFrame extends JFrame implements ActionListener {
 				try {
 					filePath = result.getSelectedFile().getAbsolutePath();
 					File tempFile = new File(filePath);
-					System.out.println("try to decrypt:"+filePath);
-					File outputFile = new File("G:\\test\\Data Records\\temp");
+					//System.out.println("try to decrypt:"+filePath);
+					File outputFile = new File("test\\Data Records\\temp");
 
 					outputFile.delete();
 					outputFile.createNewFile();
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
 					
-					String[] command = { "notepad","G:\\test\\Data Records\\temp"};
+					String[] command = { "notepad","test\\Data Records\\temp"};
 					Runtime.getRuntime().exec(command);
 					result.rescanCurrentDirectory();
 				} catch (Exception e1) {
@@ -306,17 +306,17 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					String strp="file"+rand;
 
 					File tempFile = new File(filePath);
-					File outputFile = new File("G:\\test\\Data Records\\"+strp);
+					File outputFile = new File("test\\Data Records\\"+strp);
 					
 					int dot = filePath.lastIndexOf(".");
 					String str1 = filePath.substring(0, dot);
 					dot = str1.lastIndexOf("\\");
 					str1 = str1.substring(dot+1, str1.length());
 					
-					System.out.println("filename:"+str1+" length:"+str1.length());
+					//System.out.println("filename:"+str1+" length:"+str1.length());
 					byte[] strb=rsa.encryptk(publicKey, str1.getBytes());
 					String str=encoder.encodeToString(strb);
-					System.out.println("encfilename:"+(str.hashCode()+""));
+					//System.out.println("encfilename:"+(str.hashCode()+""));
 					try {
 						outputFile.createNewFile();
 
@@ -327,7 +327,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					
 					
 					
-					Trapdoor t = new Trapdoor(2,str.hashCode()+"","G:\\test\\Data Records\\"+strp);
+					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test\\Data Records\\"+strp);
 					try 
 					{
 						oos.writeObject(t);
@@ -354,26 +354,10 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	}
 
 	private void displayInitialInformation() {
-		jta1.append("Path: F\\test\\Client\\\n\n");
+		jta1.append("Path: test\\Client\\\n\n");
 		jta1.append("Port Number: 8901\n\n");
 		jta1.append("Initial success, click the connect button to use.");
-		/*String test="keyword1";
 		
-		byte[] temp=rsa.encbypri(privateKey,test.getBytes());
-		try {
-			System.out.println("temp is:"+new String(temp,"ISO-8859-1"));
-		} catch (UnsupportedEncodingException e1) {
-			// TODO 自动生成的 catch 块
-			e1.printStackTrace();
-		}
-		temp=rsa.sign2cypher(publicKey,temp);
-
-		try {
-			System.out.println("temp is:"+new String(temp,"ISO-8859-1"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
-		}*/
 	}
 
 
