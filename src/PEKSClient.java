@@ -96,7 +96,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		connect.addActionListener(this);
 
 		updatePanel = new JPanel(new BorderLayout());
-		update = new JFileChooser("G:\\test");
+		update = new JFileChooser("test");
 		update.setControlButtonsAreShown(false);
 		updatePanel.add(update, BorderLayout.CENTER);
 		buttonPanel1 = new JPanel();
@@ -113,7 +113,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		search.addActionListener(this);
 
 		resultPanel = new JPanel(new BorderLayout());
-		result = new JFileChooser("G:\\test\\Search Result");
+		result = new JFileChooser("test\\Search Result");
 		result.setControlButtonsAreShown(false);
 		resultPanel.add(result, BorderLayout.CENTER);
 		buttonPanel = new JPanel();
@@ -151,7 +151,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 	public void loadParameters() {
 		try {
-			ois = new ObjectInputStream(new FileInputStream("G:\\test\\client.data"));
+			ois = new ObjectInputStream(new FileInputStream("test\\client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
 			
@@ -195,15 +195,16 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 			else {
 				keyword = keywordField.getText().trim();
-				String strb=encoder.encodeToString(keyword.getBytes());
-				
-				byte[] str = null;
+
+				byte[] strb=rsa.encryptk(publicKey, keyword.getBytes());
+				String str=encoder.encodeToString(strb);
+				System.out.println("keyword is:"+str.hashCode());
 				try {
-					str = rsa.signature(privateKey, (strb.hashCode()+"").getBytes());
+					strb = rsa.signature(privateKey, (str.hashCode()+"").getBytes());
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
-				String strt=encoder.encodeToString(str);
+				String strt=encoder.encodeToString(strb);
 																	 
 				Trapdoor t = new Trapdoor(1,strt,null);
 
@@ -313,8 +314,9 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					str1 = str1.substring(dot+1, str1.length());
 					
 					System.out.println("filename:"+str1+" length:"+str1.length());
-					String strb=encoder.encodeToString(str1.getBytes());
-					System.out.println("encfilename:"+(strb.hashCode()+""));
+					byte[] strb=rsa.encryptk(publicKey, str1.getBytes());
+					String str=encoder.encodeToString(strb);
+					System.out.println("encfilename:"+(str.hashCode()+""));
 					try {
 						outputFile.createNewFile();
 
@@ -325,7 +327,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					
 					
 					
-					Trapdoor t = new Trapdoor(2,strb.hashCode()+"","G:\\test\\Data Records\\"+strp);
+					Trapdoor t = new Trapdoor(2,str.hashCode()+"","G:\\test\\Data Records\\"+strp);
 					try 
 					{
 						oos.writeObject(t);

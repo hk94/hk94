@@ -29,12 +29,18 @@ public class RSAdemo {
 		}
 		return null;
 	}
-	/** */
-	/**
-	 * * Basic decrypt method *
-	 * 
-	 * @return byte[]
-	 */
+	protected byte[] encryptk(RSAPublicKey publicKey, byte[] obj) {
+		if (publicKey != null) {
+			try {
+				Cipher cipher = Cipher.getInstance("RSA/ECB/NoPadding");
+				cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+				return cipher.doFinal(obj);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
 	protected byte[] decrypt(RSAPrivateKey privateKey, byte[] obj) {
 		if (privateKey != null) {
 			try {

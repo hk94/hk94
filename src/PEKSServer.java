@@ -75,7 +75,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		
 
 		setTitle("PEKS Server");
-		jfc = new JFileChooser("G:\\test\\Data Records");
+		jfc = new JFileChooser("test\\Data Records");
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta);
 		jta.setEditable(false);
@@ -116,7 +116,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 									// the system parameters
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					"G:\\test\\server.data"));
+					"test\\server.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			System.out.println("publickey is :"+publicKey.toString());
 			
@@ -124,8 +124,8 @@ class PEKSSFrame extends JFrame implements ActionListener {
 			
 			mds = MessageDigest.getInstance("SHA");// initial the
 													// messagedigester
-			System.out.println("Initial Success, path is: G:\\test\\\n");
-			jta.append("Initial Success, path is: G:\\test\\\n");
+			System.out.println("Initial Success, path is: test\\\n");
+			jta.append("Initial Success, path is: test\\\n");
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
@@ -296,7 +296,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 						ht.put(t.getpath(),strt);
 						
 						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(
-								"G:\\test\\filelist.data"));
+								"test\\filelist.data"));
 						o.writeObject(ht);
 						o.close();
 						jta.append("\nUpdate success!");
