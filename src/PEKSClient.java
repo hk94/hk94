@@ -113,7 +113,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		search.addActionListener(this);
 
 		resultPanel = new JPanel(new BorderLayout());
-		result = new JFileChooser("test\\Search Result");
+		result = new JFileChooser("test\\SearchResult");
 		result.setControlButtonsAreShown(false);
 		resultPanel.add(result, BorderLayout.CENTER);
 		buttonPanel = new JPanel();

@@ -75,7 +75,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		
 
 		setTitle("PEKS Server");
-		jfc = new JFileChooser("test\\Data Records");
+		jfc = new JFileChooser("test\\DataRecords");
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta);
 		jta.setEditable(false);
