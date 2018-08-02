@@ -17,14 +17,14 @@ public class PEKSInitial {
 			KeyPair keyPair = keyPairGen.generateKeyPair();
 			RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
 			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-			ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream("test\\server.data"));
+			ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream("test/server.data"));
 			oos.writeObject(publicKey);
 			oos.close();
-			ObjectOutputStream oos2=new ObjectOutputStream(new FileOutputStream("test\\client.data"));
+			ObjectOutputStream oos2=new ObjectOutputStream(new FileOutputStream("test/client.data"));
 			oos2.writeObject(publicKey);
 			oos2.writeObject(privateKey);
 			oos2.close();
-			ObjectOutputStream oos3=new ObjectOutputStream(new FileOutputStream("test\\client1.data"));
+			ObjectOutputStream oos3=new ObjectOutputStream(new FileOutputStream("test/client1.data"));
 			oos3.writeObject(privateKey);
 			oos3.close();
 		} catch (NoSuchAlgorithmException e) {

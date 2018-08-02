@@ -113,7 +113,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		search.addActionListener(this);
 
 		resultPanel = new JPanel(new BorderLayout());
-		result = new JFileChooser("test\\SearchResult");
+		result = new JFileChooser("test/SearchResult");
 		result.setControlButtonsAreShown(false);
 		resultPanel.add(result, BorderLayout.CENTER);
 		buttonPanel = new JPanel();
@@ -151,7 +151,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 	public void loadParameters() {
 		try {
-			ois = new ObjectInputStream(new FileInputStream("test\\client.data"));
+			ois = new ObjectInputStream(new FileInputStream("test/client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
 			
@@ -223,7 +223,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 						tempFile = new File(fileName);
 						fis = new FileInputStream(tempFile);
 						fos = new FileOutputStream(
-								"test\\SearchResult\\"
+								"test/SearchResult/"
 										+ tempFile.getName());
 						//System.out.println("file is :"+tempFile.getName());
 						int i = 0;
@@ -278,14 +278,14 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					filePath = result.getSelectedFile().getAbsolutePath();
 					File tempFile = new File(filePath);
 					//System.out.println("try to decrypt:"+filePath);
-					File outputFile = new File("test\\DataRecords\\temp");
+					File outputFile = new File("test/DataRecords/temp");
 
 					outputFile.delete();
 					outputFile.createNewFile();
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
 					
-					String[] command = { "notepad","test\\DataRecords\\temp"};
+					String[] command = { "notepad","test/DataRecords/temp"};
 					Runtime.getRuntime().exec(command);
 					result.rescanCurrentDirectory();
 				} catch (Exception e1) {
@@ -304,13 +304,13 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					filePath = update.getSelectedFile().getAbsolutePath();
 					int rand=(int)((100000000+Math.random()*899999999)+(100000000+Math.random()*899999999)+(100000000+Math.random()*899999999));
 					String strp="file"+rand;
-
+					
 					File tempFile = new File(filePath);
-					File outputFile = new File("test\\DataRecords\\"+strp);
+					File outputFile = new File("test/DataRecords/"+strp);
 					
 					int dot = filePath.lastIndexOf(".");
 					String str1 = filePath.substring(0, dot);
-					dot = str1.lastIndexOf("\\");
+					dot = str1.lastIndexOf("/");
 					str1 = str1.substring(dot+1, str1.length());
 					
 					//System.out.println("filename:"+str1+" length:"+str1.length());
@@ -319,15 +319,15 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					//System.out.println("encfilename:"+(str.hashCode()+""));
 					try {
 						outputFile.createNewFile();
-
+						
 						rsa.encryptFile(publicKey, tempFile, outputFile);
 						 } catch (IOException e1) {
 						  // TODO Auto-generated catch block
 						  e1.printStackTrace();}
+						  
 					
 					
-					
-					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test\\DataRecords\\"+strp);
+					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test/DataRecords/"+strp);
 					try 
 					{
 						oos.writeObject(t);
@@ -342,7 +342,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 							JOptionPane.showMessageDialog(jtp,
 									"Update failed!");
 						}
-
+						
 					}
 					catch (Exception e1)
 					{
@@ -354,7 +354,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	}
 
 	private void displayInitialInformation() {
-		jta1.append("Path: test\\\n\n");
+		jta1.append("Path: test/\n\n");
 		jta1.append("Port Number: 8901\n\n");
 		jta1.append("Initial success, click the connect button to use.");
 		
