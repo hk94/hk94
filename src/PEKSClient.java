@@ -68,6 +68,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	boolean connected = true;
 	RSAPublicKey publicKey;
 	RSAPrivateKey privateKey;
+	RSAPublicKey spublicKey;
+	RSAPrivateKey sprivateKey;
 
 	RSAdemo rsa = new RSAdemo();
 	Base64.Decoder decoder = Base64.getDecoder();
@@ -154,7 +156,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 			ois = new ObjectInputStream(new FileInputStream("test/client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
-			
+			spublicKey=(RSAPublicKey) ois.readObject();
+			sprivateKey=(RSAPrivateKey) ois.readObject();
 			ois.close();
 			
 			mdc = MessageDigest.getInstance("SHA");
@@ -196,7 +199,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 			else {
 				keyword = keywordField.getText().trim();
 
-				byte[] strb=rsa.encryptk(publicKey, keyword.getBytes());
+				byte[] strb=rsa.encryptk(spublicKey, keyword.getBytes());
 				String str=encoder.encodeToString(strb);
 				//System.out.println("keyword is:"+str.hashCode());
 				try {
@@ -314,13 +317,13 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					str1 = str1.substring(dot+1, str1.length());
 					
 					//System.out.println("filename:"+str1+" length:"+str1.length());
-					byte[] strb=rsa.encryptk(publicKey, str1.getBytes());
+					byte[] strb=rsa.encryptk(spublicKey, str1.getBytes());
 					String str=encoder.encodeToString(strb);
 					//System.out.println("encfilename:"+(str.hashCode()+""));
 					try {
 						outputFile.createNewFile();
 						
-						rsa.encryptFile(publicKey, tempFile, outputFile);
+						rsa.encryptFile(spublicKey, tempFile, outputFile);
 						 } catch (IOException e1) {
 						  // TODO Auto-generated catch block
 						  e1.printStackTrace();}
