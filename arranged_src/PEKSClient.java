@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
@@ -18,6 +18,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Random;
+import java.nio.ByteBuffer;
 
 import javax.crypto.SecretKey;
 import javax.swing.JButton;
@@ -77,8 +78,6 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	PEKSCFrame() {// constructor, initial the graphic user interface
 		setTitle("PEKS Client");
 		
-		
-		
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta1);
 		jta.setLineWrap(true);
@@ -113,7 +112,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		search.addActionListener(this);
 
 		resultPanel = new JPanel(new BorderLayout());
-		result = new JFileChooser("test\\SearchResult");
+		result = new JFileChooser("test/client/SearchResult");
 		result.setControlButtonsAreShown(false);
 		resultPanel.add(result, BorderLayout.CENTER);
 		buttonPanel = new JPanel();
@@ -136,9 +135,6 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		centerPanel.add(jtp, BorderLayout.CENTER);
 		add(centerPanel, BorderLayout.CENTER);
 		inetsa = new InetSocketAddress("127.0.0.1", 8901);
-		
-
-        
         
 		setLocation(300, 10);
 		pack();
@@ -151,7 +147,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 	public void loadParameters() {
 		try {
-			ois = new ObjectInputStream(new FileInputStream("test\\client.data"));
+			ois = new ObjectInputStream(new FileInputStream("test/client/client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
 			
@@ -167,44 +163,33 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-
 		if (e.getSource() == connect) {// response of initial
-	
 				clientS = new Socket();
 				try {
 					clientS.connect(inetsa, 5000);
-
 					oos = new ObjectOutputStream(clientS.getOutputStream());
 					ois = new ObjectInputStream(clientS.getInputStream());
-
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
 				connect.setEnabled(false);
-			
 		}
+
 		if (e.getSource() == search) {// generate token for search
-
 			if (keywordField.getText().length() == 0) {
-				JOptionPane
-						.showMessageDialog(null,
-								"Sorry, you have not input a valid keyword! Please try again!");
-			}
-
-			else {
+				JOptionPane.showMessageDialog(null,	"Sorry, you have not input a valid keyword! Please try again!");
+			} else {
 				keyword = keywordField.getText().trim();
-
-				byte[] strb=rsa.encryptk(publicKey, keyword.getBytes());
-				String str=encoder.encodeToString(strb);
-				//System.out.println("keyword is:"+str.hashCode());
+				byte[] strb = rsa.encryptk(publicKey, keyword.getBytes());
+				String str = encoder.encodeToString(strb);
 				try {
 					strb = rsa.signature(privateKey, (str.hashCode()+"").getBytes());
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
-				String strt=encoder.encodeToString(strb);
+				String[] strt = new String[1];
+				strt[0] = encoder.encodeToString(strb);
 																	 
 				Trapdoor t = new Trapdoor(1,strt,null);
 
@@ -217,15 +202,11 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					File tempFile;
 					FileInputStream fis;
 					FileOutputStream fos;
-					while (tempC==1) {
-
+					while (tempC == 1) {
 						fileName = (String) ois.readObject();
 						tempFile = new File(fileName);
 						fis = new FileInputStream(tempFile);
-						fos = new FileOutputStream(
-								"test\\SearchResult\\"
-										+ tempFile.getName());
-						//System.out.println("file is :"+tempFile.getName());
+						fos = new FileOutputStream("test/client/SearchResult/" + tempFile.getName());
 						int i = 0;
 						while ((i = fis.read()) != -1) {
 							fos.write(i);
@@ -235,15 +216,10 @@ class PEKSCFrame extends JFrame implements ActionListener {
 						tempC = ois.readInt();
 					}
 
-					//System.out.println("c3");
-					if  (tempC==-1){
-						JOptionPane.showMessageDialog(jtp,
-								"No File Matching");
-					}
-					else
-					{
-						JOptionPane
-								.showMessageDialog(jtp, "Searching Completed");
+					if (tempC == -1){
+						JOptionPane.showMessageDialog(jtp, "No File Matching");
+					}else{
+						JOptionPane.showMessageDialog(jtp, "Searching Completed");
 					}
 
 				} catch (Exception e1) {
@@ -253,13 +229,12 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 			}
 		}
-		if (e.getSource() == cipherText) {// open file button clicked
+
+		if (e.getSource() == cipherText) {  // open file button clicked
 			if (result.getSelectedFile() == null) {
-				JOptionPane.showMessageDialog(jtp,
-						"No Files selected, Please try again!");
+				JOptionPane.showMessageDialog(jtp, "No Files selected, Please try again!");
 			} else {
-				String[] command = { "notepad",
-						result.getSelectedFile().getAbsolutePath() };
+				String[] command = { "notepad", result.getSelectedFile().getAbsolutePath() };
 				try {
 					Runtime.getRuntime().exec(command);
 				} catch (IOException e1) {
@@ -271,21 +246,19 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 		if (e.getSource() == plainText) {
 			if (result.getSelectedFile() == null) {
-				JOptionPane.showMessageDialog(jtp,
-						"No Files selected, Please try again!");
+				JOptionPane.showMessageDialog(jtp, "No Files selected, Please try again!");
 			} else {
 				try {
 					filePath = result.getSelectedFile().getAbsolutePath();
 					File tempFile = new File(filePath);
-					//System.out.println("try to decrypt:"+filePath);
-					File outputFile = new File("test\\DataRecords\\temp");
+					File outputFile = new File("test/server/DataRecords/temp");
 
 					outputFile.delete();
 					outputFile.createNewFile();
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
 					
-					String[] command = { "notepad","test\\DataRecords\\temp"};
+					String[] command = { "notepad","test/server/DataRecords/temp"};
 					Runtime.getRuntime().exec(command);
 					result.rescanCurrentDirectory();
 				} catch (Exception e1) {
@@ -297,71 +270,63 @@ class PEKSCFrame extends JFrame implements ActionListener {
 		
 		if (e.getSource() == updateFile) {
 			if (update.getSelectedFile() == null) {
-				JOptionPane.showMessageDialog(jtp,
-						"No Files selected, Please try again!");
+				JOptionPane.showMessageDialog(jtp, "No Files selected, Please try again!");
 			} 
 			else {
-					filePath = update.getSelectedFile().getAbsolutePath();
-					int rand=(int)((100000000+Math.random()*899999999)+(100000000+Math.random()*899999999)+(100000000+Math.random()*899999999));
-					String strp="file"+rand;
+				filePath = update.getSelectedFile().getAbsolutePath();
+				int rand = (int)((100000000+Math.random()*899999999)+(100000000+Math.random()*899999999)+(100000000						  + Math.random() * 899999999));
+				String strp = "file" + rand;
 
-					File tempFile = new File(filePath);
-					File outputFile = new File("test\\DataRecords\\"+strp);
-					
-					int dot = filePath.lastIndexOf(".");
-					String str1 = filePath.substring(0, dot);
-					dot = str1.lastIndexOf("\\");
-					str1 = str1.substring(dot+1, str1.length());
-					
-					//System.out.println("filename:"+str1+" length:"+str1.length());
-					byte[] strb=rsa.encryptk(publicKey, str1.getBytes());
-					String str=encoder.encodeToString(strb);
-					//System.out.println("encfilename:"+(str.hashCode()+""));
-					try {
-						outputFile.createNewFile();
+				File tempFile = new File(filePath);
+				File outputFile = new File("test/server/DataRecords/" + strp);	
 
-						rsa.encryptFile(publicKey, tempFile, outputFile);
-						 } catch (IOException e1) {
-						  // TODO Auto-generated catch block
-						  e1.printStackTrace();}
-					
-					
-					
-					Trapdoor t = new Trapdoor(2,str.hashCode()+"","test\\DataRecords\\"+strp);
-					try 
-					{
-						oos.writeObject(t);
-						oos.flush();
-						tempB = ois.readBoolean();
-						if (tempB) {
-							JOptionPane
-									.showMessageDialog(jtp, "Upload Success!");
-						} 
-						else 
-						{
-							JOptionPane.showMessageDialog(jtp,
-									"Update failed!");
-						}
-
-					}
-					catch (Exception e1)
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+				int dot = filePath.lastIndexOf(".");
+				String str1 = filePath.substring(0, dot);
+				dot = str1.lastIndexOf("/");
+				str1 = str1.substring(dot+1, str1.length());  // str1 is file name(not including file extension, and directiory informtion)
+				String[] strs = str1.split("__");
+				String[] enc_strs = new String[strs.length];
+				
+				for(int j=0;j<strs.length;j++){
+					String str2 = strs[j];
+					byte[] strb = rsa.encryptk(publicKey, str2.getBytes());
+					String str = encoder.encodeToString(strb);
+					enc_strs[j] = str.hashCode()+"";
 				}
+				try {
+					outputFile.createNewFile();
+					rsa.encryptFile(publicKey, tempFile, outputFile);  // Contents of the file is uploaded after encoded
+				} catch (IOException e1) {
+					  // TODO Auto-generated catch block
+					  e1.printStackTrace();
+				}
+
+				Trapdoor t = new Trapdoor(2, enc_strs, "test/server/DataRecords/"+strp);
+				try {
+					oos.writeObject(t);
+					oos.flush();
+					tempB = ois.readBoolean();
+					if (tempB) {
+						JOptionPane.showMessageDialog(jtp, "Upload Success!");
+					} else {
+						JOptionPane.showMessageDialog(jtp, "Update failed!");
+					}
+				}catch (Exception e1){
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 
 	private void displayInitialInformation() {
-		jta1.append("Path: test\\\n\n");
+		jta1.append("Path: test/\n\n");
 		jta1.append("Port Number: 8901\n\n");
 		jta1.append("Initial success, click the connect button to use.");
 		
 	}
-
-
 }
+
 
 public class PEKSClient {
 	public static void main(String[] args) {

@@ -1,4 +1,3 @@
-﻿
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -60,7 +59,8 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	private ServerSocket ss;
 	private Socket servs;
 	private MessageDigest mds;
-	private Hashtable<String, Integer> ht;
+	private Hashtable<String, Integer[]> ht;
+	private Hashtable<String, Integer[]> ht2;
 	SecretKey key;
 	JPanel southPanel;
 	JButton openButton;
@@ -70,12 +70,11 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	RSAdemo rsa = new RSAdemo();
 	Base64.Decoder decoder = Base64.getDecoder();
 	Base64.Encoder encoder = Base64.getEncoder();
+
 	public PEKSSFrame() {
 		
-		
-
 		setTitle("PEKS Server");
-		jfc = new JFileChooser("test\\DataRecords");
+		jfc = new JFileChooser("test/server/DataRecords");
 		jta = new JTextArea(10, 10);
 		jsp = new JScrollPane(jta);
 		jta.setEditable(false);
@@ -93,7 +92,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		jmi2.addActionListener(this);// add action listener
 		setJMenuBar(jmb);
 		add(jsp, BorderLayout.EAST);
-		ht = new Hashtable<String, Integer>();// initial the hashtable
+		ht = new Hashtable<String, Integer[]>();// initial the hashtable, <PATH, HashCode[]>
 		
 		southPanel = new JPanel();
 		openButton = new JButton("Open");
@@ -103,29 +102,24 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		jfc.setControlButtonsAreShown(false);
 		add(jfc);
 		
-		
-
-        
 		pack();
 		setLocation(300, 100);
 		setResizable(false);
-
 	}
 
 	public void loadParameters() {// if the system has not been initialed ,load
-									// the system parameters
+								  // the system parameters
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
-					"test\\server.data"));
-			publicKey=(RSAPublicKey) ois.readObject();
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("test/server/server.data"));
+			publicKey = (RSAPublicKey) ois.readObject();
 			System.out.println("publickey is :"+publicKey.toString());
 			
 			ois.close();
 			
 			mds = MessageDigest.getInstance("SHA");// initial the
 													// messagedigester
-			System.out.println("Initial Success, path is: test\\\n");
-			jta.append("Initial Success, path is: test\\\n");
+			System.out.println("Initial Success, path is: test/\n");
+			jta.append("Initial Success, path is: test/\n");
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
@@ -136,7 +130,6 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() == jmi1) {
-			
 			loadParameters();
 			socketThread st = new socketThread();
 			Thread socketT = new Thread(st);
@@ -146,13 +139,12 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		if (e.getSource() == jmi2) {
 			System.exit(0);
 		}
+
 		if (e.getSource() == openButton) {
 			if (jfc.getSelectedFile() == null) {
-				JOptionPane.showMessageDialog(null,
-						"No File Choosed! please try again!");
+				JOptionPane.showMessageDialog(null, "No File Choosed! please try again!");
 			} else {
-				String[] command = { "notepad",
-						jfc.getSelectedFile().getAbsolutePath() };
+				String[] command = { "notepad", jfc.getSelectedFile().getAbsolutePath() };
 				try {
 					Runtime.getRuntime().exec(command);
 				} catch (Exception e1) {
@@ -161,6 +153,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 			}
 		}
 	}
+
 
 	private class socketThread implements Runnable {// this thread is to initial
 													// the socket to listen to
@@ -176,11 +169,9 @@ class PEKSSFrame extends JFrame implements ActionListener {
 
 				servs = ss.accept();
 
-				jta.append("\n" + servs.getLocalSocketAddress()
-						+ "Connect Success.");
+				jta.append("\n" + servs.getLocalSocketAddress() + "Connect Success.");
 			} catch (Exception es) {
-				JOptionPane.showMessageDialog(null,
-						"socket error has taken place!");
+				JOptionPane.showMessageDialog(null, "socket error has taken place!");
 			}
 			serverThread st = new serverThread(servs);
 			Thread t = new Thread(st);
@@ -237,47 +228,44 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-
 			while (!s.isClosed()) {
 				try {
 					Trapdoor t = (Trapdoor) ois1.readObject();
 					int type = t.getType();
-					if (type==1)
-					{
-						String tempt=t.getStr();
-						//System.out.println("tempt is:"+tempt);
-						byte[] sign=decoder.decode(tempt);
+
+					if (type == 1){  // Search Mode
+						String tempt = t.getStr()[0];
+						byte[] sign = decoder.decode(tempt);
+						ht2 = new Hashtable<String, Integer[]>();
+						ObjectInputStream ois_=new ObjectInputStream(new FileInputStream("test/server/filelist.data"));
+						ht2 = (Hashtable<String, Integer[]>)ois_.readObject();
 						jta.append("\ncomplete reading the trapdoor!\nStarting to seach!");
 						i = 0;
 						jpb.setValue(i);
 						jdg.setVisible(true);
-						for (String tempk : ht.keySet()) {
-							int tempb = ht.get(tempk);
-							//System.out.println("tempb is:"+tempb);
-							if (rsa.verify(publicKey,(tempb+"").getBytes(),sign)) {
-						
-										oos1.writeInt(1);
-						        		fileName = tempk;
-										tempFile = new File(fileName);
-										oos1.writeObject(fileName);
 
-										oos1.flush();
-										jpb.setValue(jpb.getMaximum());
-										showArea.setText(tempb
-												+ "match success!");
-										jdg.setVisible(false);	
-										i++;
-										jpb.setValue(i);
-										showArea.setText("Now Matching:"+tempb);
-						        	
+						for (String tempk : ht2.keySet()) {
+							Integer[] tempb_ = ht.get(tempk);
+							for(Integer tempb: tempb_){
+								if (rsa.verify(publicKey, (tempb+"").getBytes(), sign)) {		
+											oos1.writeInt(1);
+							        		fileName = tempk;
+											tempFile = new File(fileName);
+											oos1.writeObject(fileName);
+											oos1.flush();
+											jpb.setValue(jpb.getMaximum());
+											showArea.setText(tempb + "match success!");
+											jdg.setVisible(false);	
+											i++;
+											jpb.setValue(i);
+											showArea.setText("Now Matching:"+tempb);   	
+								}
 							}
 						}
-						if (i==0)
-						{
+						if (i==0){
 							oos1.writeInt(-1);
 						}
-						else
-						{
+						else{
 							oos1.writeInt(0);
 						}
 						oos1.flush();
@@ -287,22 +275,21 @@ class PEKSSFrame extends JFrame implements ActionListener {
 							jdg.setVisible(false);
 						}
 					}
-					else
-					{
-						String str = t.getStr();
-						int strt=Integer.parseInt(str);
-						//System.out.println("hashtable put:"+strt);
-
-						ht.put(t.getpath(),strt);
+					
+					else{  // Upload Mode
+						String[] str = t.getStr();
+						Integer[] strt = new Integer[str.length];
+						for(int j=0;j<str.length;j++){
+							strt[j] = Integer.parseInt(str[j]);
+						}
+						ht.put(t.getpath(), strt);
 						
-						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(
-								"test\\filelist.data"));
+						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("test/server/filelist.data"));
 						o.writeObject(ht);
 						o.close();
 						jta.append("\nUpdate success!");
 						oos1.writeBoolean(true);
 						oos1.flush();
-						
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
