@@ -144,7 +144,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 			if (jfc.getSelectedFile() == null) {
 				JOptionPane.showMessageDialog(null, "No File Choosed! please try again!");
 			} else {
-				String[] command = { "notepad", jfc.getSelectedFile().getAbsolutePath() };
+				String[] command = { "open", jfc.getSelectedFile().getAbsolutePath() };
 				try {
 					Runtime.getRuntime().exec(command);
 				} catch (Exception e1) {
