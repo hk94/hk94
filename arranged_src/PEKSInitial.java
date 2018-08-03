@@ -15,12 +15,17 @@ public class PEKSInitial {
 			KeyPair keyPair = keyPairGen.generateKeyPair();
 			RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
 			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+			KeyPair skeyPair = keyPairGen.generateKeyPair();
+			RSAPrivateKey sprivateKey = (RSAPrivateKey) skeyPair.getPrivate();
+			RSAPublicKey spublicKey = (RSAPublicKey) skeyPair.getPublic();
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("test/server/server.data"));
 			oos.writeObject(publicKey);
 			oos.close();
 			ObjectOutputStream oos2 = new ObjectOutputStream(new FileOutputStream("test/client/client.data"));
 			oos2.writeObject(publicKey);
 			oos2.writeObject(privateKey);
+			oos2.writeObject(spublicKey);
+			oos2.writeObject(sprivateKey);
 			oos2.close();
 			ObjectOutputStream oos3 = new ObjectOutputStream(new FileOutputStream("test/client/client1.data"));
 			oos3.writeObject(privateKey);

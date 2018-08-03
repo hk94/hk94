@@ -69,6 +69,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 	boolean connected = true;
 	RSAPublicKey publicKey;
 	RSAPrivateKey privateKey;
+	RSAPublicKey spublicKey;
+	RSAPrivateKey sprivateKey;
 
 	RSAdemo rsa = new RSAdemo();
 	Base64.Decoder decoder = Base64.getDecoder();
@@ -150,6 +152,8 @@ class PEKSCFrame extends JFrame implements ActionListener {
 			ois = new ObjectInputStream(new FileInputStream("test/client/client.data"));
 			publicKey=(RSAPublicKey) ois.readObject();
 			privateKey=(RSAPrivateKey) ois.readObject();
+			spublicKey = (RSAPublicKey) ois.readObject();
+			sprivateKey = (RSAPrivateKey) ois.readObject();
 			
 			ois.close();
 			
@@ -181,7 +185,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(null,	"Sorry, you have not input a valid keyword! Please try again!");
 			} else {
 				keyword = keywordField.getText().trim();
-				byte[] strb = rsa.encryptk(publicKey, keyword.getBytes());
+				byte[] strb = rsa.encryptk(spublicKey, keyword.getBytes());
 				String str = encoder.encodeToString(strb);
 				try {
 					strb = rsa.signature(privateKey, (str.hashCode()+"").getBytes());
@@ -289,13 +293,13 @@ class PEKSCFrame extends JFrame implements ActionListener {
 				
 				for(int j=0;j<strs.length;j++){
 					String str2 = strs[j];
-					byte[] strb = rsa.encryptk(publicKey, str2.getBytes());
+					byte[] strb = rsa.encryptk(spublicKey, str2.getBytes());
 					String str = encoder.encodeToString(strb);
 					enc_strs[j] = str.hashCode()+"";
 				}
 				try {
 					outputFile.createNewFile();
-					rsa.encryptFile(publicKey, tempFile, outputFile);  // Contents of the file is uploaded after encoded
+					rsa.encryptFile(spublicKey, tempFile, outputFile);  // Contents of the file is uploaded after encoded
 				} catch (IOException e1) {
 					  // TODO Auto-generated catch block
 					  e1.printStackTrace();
