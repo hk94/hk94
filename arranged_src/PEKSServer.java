@@ -46,6 +46,10 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+
 
 class PEKSSFrame extends JFrame implements ActionListener {
 
@@ -283,7 +287,25 @@ class PEKSSFrame extends JFrame implements ActionListener {
 							strt[j] = Integer.parseInt(str[j]);
 						}
 						ht.put(t.getpath(), strt);
-						
+
+						// Get similarity
+						System.out.println(ht.size()+" files now.");
+						for(String path1:ht.keySet()){
+							for(String path2:ht.keySet()){
+								if(path1.equals(path2))continue;
+								List<Integer> ils1=java.util.Arrays.asList(ht.get(path1));
+								List<Integer> ils2=java.util.Arrays.asList(ht.get(path2));
+								HashSet<Integer> sum = new HashSet<>();
+								sum.addAll(ils1);
+								sum.addAll(ils2);
+								HashSet<Integer> intr = new HashSet<Integer>(ils1);
+								intr.retainAll(ils2);
+								System.out.println(path1.substring(24)+" x "+path2.substring(24)+" : "+(((float)intr.size())/sum.size()));
+
+							}
+						}
+						//end
+
 						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("test/server/filelist.data"));
 						o.writeObject(ht);
 						o.close();
