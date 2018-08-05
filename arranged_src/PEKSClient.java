@@ -187,14 +187,9 @@ class PEKSCFrame extends JFrame implements ActionListener {
 				keyword = keywordField.getText().trim();
 				byte[] strb = rsa.encryptk(spublicKey, keyword.getBytes());
 				String str = encoder.encodeToString(strb);
-				try {
-					strb = rsa.signature(privateKey, (str.hashCode()+"").getBytes());
-				} catch (Exception e2) {
-					e2.printStackTrace();
-				}
-				String[] strt = new String[1];
-				strt[0] = encoder.encodeToString(strb);
-																	 
+				
+				byte[][] strt = new byte[1][];
+				strt[0] = strb;												 
 				Trapdoor t = new Trapdoor(1,strt,null);
 
 				try {
@@ -280,22 +275,29 @@ class PEKSCFrame extends JFrame implements ActionListener {
 				filePath = update.getSelectedFile().getAbsolutePath();
 				int rand = (int)((100000000+Math.random()*899999999)+(100000000+Math.random()*899999999)+(100000000						  + Math.random() * 899999999));
 				String strp = "file" + rand;
-
+				
 				File tempFile = new File(filePath);
 				File outputFile = new File("test/server/DataRecords/" + strp);	
-
+				
 				int dot = filePath.lastIndexOf(".");
 				String str1 = filePath.substring(0, dot);
 				dot = str1.lastIndexOf("/");
 				str1 = str1.substring(dot+1, str1.length());  // str1 is file name(not including file extension, and directiory informtion)
 				String[] strs = str1.split("__");
-				String[] enc_strs = new String[strs.length];
+				byte[][] enc_strs = new byte[strs.length][];
 				
 				for(int j=0;j<strs.length;j++){
 					String str2 = strs[j];
 					byte[] strb = rsa.encryptk(spublicKey, str2.getBytes());
 					String str = encoder.encodeToString(strb);
-					enc_strs[j] = str.hashCode()+"";
+					try {
+						strb = rsa.signature(privateKey, strb);
+						enc_strs[j] = strb;
+					} catch (Exception e2) {
+						e2.printStackTrace();
+					}
+					String[] strt = new String[1];
+					
 				}
 				try {
 					outputFile.createNewFile();
@@ -304,7 +306,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 					  // TODO Auto-generated catch block
 					  e1.printStackTrace();
 				}
-
+				
 				Trapdoor t = new Trapdoor(2, enc_strs, "test/server/DataRecords/"+strp);
 				try {
 					oos.writeObject(t);

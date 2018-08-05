@@ -59,8 +59,8 @@ class PEKSSFrame extends JFrame implements ActionListener {
 	private ServerSocket ss;
 	private Socket servs;
 	private MessageDigest mds;
-	private Hashtable<String, Integer[]> ht;
-	private Hashtable<String, Integer[]> ht2;
+	private Hashtable<String, byte[][]> ht;
+	private Hashtable<String, byte[][]> ht2;
 	SecretKey key;
 	JPanel southPanel;
 	JButton openButton;
@@ -92,7 +92,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 		jmi2.addActionListener(this);// add action listener
 		setJMenuBar(jmb);
 		add(jsp, BorderLayout.EAST);
-		ht = new Hashtable<String, Integer[]>();// initial the hashtable, <PATH, HashCode[]>
+		ht = new Hashtable<String, byte[][]>();// initial the hashtable, <PATH, HashCode[]>
 		
 		southPanel = new JPanel();
 		openButton = new JButton("Open");
@@ -234,20 +234,20 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					int type = t.getType();
 
 					if (type == 1){  // Search Mode
-						String tempt = t.getStr()[0];
-						byte[] sign = decoder.decode(tempt);
-						ht2 = new Hashtable<String, Integer[]>();
+						byte[] tempt = t.getStr()[0];
+						byte[] sign = tempt;
+						ht2 = new Hashtable<String, byte[][]>();
 						ObjectInputStream ois_=new ObjectInputStream(new FileInputStream("test/server/filelist.data"));
-						ht2 = (Hashtable<String, Integer[]>)ois_.readObject();
+						ht2 = (Hashtable<String, byte[][]>)ois_.readObject();
 						jta.append("\ncomplete reading the trapdoor!\nStarting to seach!");
 						i = 0;
 						jpb.setValue(i);
 						jdg.setVisible(true);
 
 						for (String tempk : ht2.keySet()) {
-							Integer[] tempb_ = ht.get(tempk);
-							for(Integer tempb: tempb_){
-								if (rsa.verify(publicKey, (tempb+"").getBytes(), sign)) {		
+							byte[][] tempb_ = ht.get(tempk);
+							for(byte[] tempb: tempb_){
+								if (rsa.verify(publicKey, sign, (tempb))) {		
 											oos1.writeInt(1);
 							        		fileName = tempk;
 											tempFile = new File(fileName);
@@ -277,12 +277,9 @@ class PEKSSFrame extends JFrame implements ActionListener {
 					}
 					
 					else{  // Upload Mode
-						String[] str = t.getStr();
+						byte[][] str = t.getStr();
 						Integer[] strt = new Integer[str.length];
-						for(int j=0;j<str.length;j++){
-							strt[j] = Integer.parseInt(str[j]);
-						}
-						ht.put(t.getpath(), strt);
+						ht.put(t.getpath(), str);
 						
 						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("test/server/filelist.data"));
 						o.writeObject(ht);
