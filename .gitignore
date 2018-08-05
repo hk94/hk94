@@ -1,0 +1,9 @@
+*.class
+*.data
+file*
+temp
+/.vscode
+/bin
+/src/test
+/src_
+/arranged_src

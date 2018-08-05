@@ -233,7 +233,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 			if (result.getSelectedFile() == null) {
 				JOptionPane.showMessageDialog(jtp, "No Files selected, Please try again!");
 			} else {
-				String[] command = { "notepad", result.getSelectedFile().getAbsolutePath() };
+				String[] command = { "open", result.getSelectedFile().getAbsolutePath() };
 				try {
 					Runtime.getRuntime().exec(command);
 				} catch (IOException e1) {
@@ -257,7 +257,7 @@ class PEKSCFrame extends JFrame implements ActionListener {
 
 					rsa.decryptFile(privateKey, tempFile, outputFile);
 					
-					String[] command = { "notepad","test/server/DataRecords/temp"};
+					String[] command = { "open","test/server/DataRecords/temp"};
 					Runtime.getRuntime().exec(command);
 					result.rescanCurrentDirectory();
 				} catch (Exception e1) {

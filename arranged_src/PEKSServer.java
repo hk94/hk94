@@ -46,6 +46,10 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+
 
 class PEKSSFrame extends JFrame implements ActionListener {
 
@@ -144,7 +148,7 @@ class PEKSSFrame extends JFrame implements ActionListener {
 			if (jfc.getSelectedFile() == null) {
 				JOptionPane.showMessageDialog(null, "No File Choosed! please try again!");
 			} else {
-				String[] command = { "notepad", jfc.getSelectedFile().getAbsolutePath() };
+				String[] command = { "open", jfc.getSelectedFile().getAbsolutePath() };
 				try {
 					Runtime.getRuntime().exec(command);
 				} catch (Exception e1) {
@@ -280,7 +284,25 @@ class PEKSSFrame extends JFrame implements ActionListener {
 						byte[][] str = t.getStr();
 						Integer[] strt = new Integer[str.length];
 						ht.put(t.getpath(), str);
-						
+
+						// Get similarity
+						System.out.println(ht.size()+" files now.");
+						for(String path1:ht.keySet()){
+							for(String path2:ht.keySet()){
+								if(path1.equals(path2))continue;
+								List<byte[]> ils1=java.util.Arrays.asList(ht.get(path1));
+								List<byte[]> ils2=java.util.Arrays.asList(ht.get(path2));
+								HashSet<byte[]> sum = new HashSet<>();
+								sum.addAll(ils1);
+								sum.addAll(ils2);
+								HashSet<byte[]> intr = new HashSet<byte[]>(ils1);
+								intr.retainAll(ils2);
+								System.out.println(path1.substring(24)+" x "+path2.substring(24)+" : "+(((float)intr.size())/sum.size()));
+
+							}
+						}
+						//end
+
 						ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream("test/server/filelist.data"));
 						o.writeObject(ht);
 						o.close();
